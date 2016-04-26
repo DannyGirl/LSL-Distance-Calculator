@@ -1,0 +1,49 @@
+integer myListener;
+float distance;
+float time;
+float speed;
+key user;
+integer count = 0;
+default
+{
+    state_entry()
+    {
+        llSetText("Distances Calculator", <1.0, 1.0, 1.0>, 1.0);
+    }
+    touch_start (integer num)
+    {
+        llListenRemove(myListener);
+        user = llDetectedKey(0);
+        myListener = llListen(0, "", user, "");
+        llInstantMessage(user, "What is the speed travelled? (number only)");
+        llSetTimerEvent(60.0);
+    }
+    listen(integer channel, string name, key id, string message)
+    {
+        if (count == 0)
+        {
+            ++count;
+            speed = (float)message;
+            llInstantMessage(user, "Speed = " + (string)speed);
+            llSleep(0.5);
+            llInstantMessage(user, "What time is taken? (numbers only)");
+        }
+        else
+        {
+            time = (float)message;
+            llInstantMessage(user, "Time = " + (string)time);
+            llSleep(0.5);
+            llInstantMessage(user, "Calculating...");
+            llSleep(1.0);
+            distance = (integer)speed*time;
+            llInstantMessage(user, " Distance = " + (string)distance + " (unit of distance used in speed)");
+            llSleep(1.0);
+            llResetScript();
+        }
+    }
+    timer()
+    {
+        llInstantMessage(user, "Time's up, please try again.");
+        llResetScript();
+    }
+}
